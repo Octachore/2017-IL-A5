@@ -53,7 +53,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Reco\BestKeeper.cs" />
+    <Compile Include="Reco\DoubleComparer.cs" />
+    <Compile Include="Reco\Extensions.cs" />
     <Compile Include="Reco\Movie.Cleanup.cs" />
+    <Compile Include="Reco\Reco.cs" />
+    <Compile Include="Reco\RecoComparer.cs" />
+    <Compile Include="Reco\SimilarUser.cs" />
     <Compile Include="Reco\User.Cleanup.cs" />
     <Compile Include="Reco\Movie.cs" />
     <Compile Include="Reco\RecoContext.cs" />

@@ -10,8 +10,8 @@ namespace Algo.Tests
     [TestFixture]
     public class Reco
     {
-        static string _badDataPath = @"C:\Intech\2017-1\S9-10\2017-IL-A5\Algo\ThirdParty\MovieData\MovieLens\";
-        static string _goodDataPath = @"C:\Intech\2017-1\S9-10\2017-IL-A5\Algo\ThirdParty\MovieData\";
+        static string _badDataPath = @"D:\dev\INTECH\2017-IL-A5\Algo\ThirdParty\MovieData\MovieLens\";
+        static string _goodDataPath = @"D:\dev\INTECH\2017-IL-A5\Algo\ThirdParty\MovieData\";
 
         [Test]
         public void CorrectData()
@@ -109,6 +109,16 @@ namespace Algo.Tests
                 Assert.That( c.Users[i].UserID, Is.EqualTo( i+1 ) );
             for( int i = 0; i < c.Movies.Length; ++i )
                 Assert.That( c.Movies[i].MovieID, Is.EqualTo( i+1 ) );
+        }
+
+        [Test]
+        public void Dummy()
+        {
+            var context = new RecoContext();
+            context.LoadFrom(_goodDataPath);
+
+            List<Algo.Reco> reco1 = context.GetTop50(context.Users[1]);
+            List<Algo.Reco> reco2 = context.GetTop50(context.Users[3712]);
         }
 
     }

@@ -44,16 +44,16 @@ namespace Algo
         public double SimilarityPearson(User u1, User u2)
         {
             IEnumerable<Movie> common = u1.Ratings.Keys.Intersect(u2.Ratings.Keys);
-            return SimilarityPearson( common.Select( m => new KeyValuePair<int,int>( u1.Ratings[m], u2.Ratings[m] ) ) );
+            return SimilarityPearson(common.Select(m => new KeyValuePair<int, int>(u1.Ratings[m], u2.Ratings[m])));
         }
 
-        static public double SimilarityPearson(params int[] values)
+        public double SimilarityPearson(params int[] values)
         {
             if(values == null || (values.Length & 1) != 0) throw new ArgumentException();
             return SimilarityPearson(Convert(values));
         }
 
-        static IEnumerable<KeyValuePair<int,int>> Convert(int[] values)
+        IEnumerable<KeyValuePair<int,int>> Convert(int[] values)
         {
             Debug.Assert(values != null && (values.Length & 1) == 0);
             for (int i = 0; i < values.Length; i++)
@@ -62,12 +62,12 @@ namespace Algo
             }
         }
 
-        static public double SimilarityPearson(IEnumerable<int> v1, IEnumerable<int> v2)
+        public double SimilarityPearson(IEnumerable<int> v1, IEnumerable<int> v2)
         {
             return SimilarityPearson(v1.Zip(v2, (x, y) => new KeyValuePair<int, int>(x, y)));
         }
 
-        static public double SimilarityPearson(IEnumerable<KeyValuePair<int,int>> values )
+        public double SimilarityPearson(IEnumerable<KeyValuePair<int,int>> values )
         {
             double sumX = 0.0;
             double sumY = 0.0;
@@ -102,6 +102,52 @@ namespace Algo
                 return numerator / Math.Sqrt(denumerator1 * denumerator2);
             }
         }
+
+        public List<Reco> GetTop50(User u)
+        {
+            List<SimilarUser> extremeSims = GetExtremeSimilarities(u, 1000);
+            return GetRecos(extremeSims);
+        }
+
+        private static double ArithmeticMean(IEnumerable<double> range) => (1.0 / range.Count()) * range.Sum();
+
+        private List<Reco> GetRecos(List<SimilarUser> sims)
+        {
+
+            var weights = new Dictionary<Movie, double>();
+            var ratingCounts = new Dictionary<Movie, int>();
+            foreach (SimilarUser simUser in sims)
+            {
+                foreach (KeyValuePair<Movie, int> rating in simUser.User.Ratings)
+                {
+                    if (!weights.ContainsKey(rating.Key)) weights.Add(rating.Key, 0);
+                    weights[rating.Key] += (rating.Value - 3) * simUser.SimilarityCoef;
+
+                    if (!ratingCounts.ContainsKey(rating.Key)) ratingCounts.Add(rating.Key, 0);
+                    ratingCounts[rating.Key] += 1;
+                }
+            }
+
+            var recos = new List<Reco>();
+
+            foreach (KeyValuePair<Movie, double> weight in weights)
+            {
+                int numberOfRatings = ratingCounts[weight.Key];
+                recos.Add(new Reco(weight.Key, weight.Value / numberOfRatings));
+            }
+
+            return recos.BestKeep(50, new RecoComparer()).ToList();
+        }
+            ////=> sims.SelectMany(s => s.User.Ratings.Select(r => new Reco(r.Key, (r.Value - 3) * s.SimilarityCoef)))
+            ////    .GroupBy(r => r.Movie)
+            ////    .Select(group => new Reco(group.First().Movie, ArithmeticMean(group.Select(r => r.Weight))))
+            ////    .OrderByDescending(r => r.Weight)
+            ////    .ToList();
+
+
+
+        private List<SimilarUser> GetExtremeSimilarities(User u, int count)
+            => Users.Where(user => user.UserID != u.UserID).Select(user => new SimilarUser(user, SimilarityPearson(u, user))).OrderByDescending(sim => Math.Abs(sim.SimilarityCoef)).Take(count).ToList();
     }
 
 
