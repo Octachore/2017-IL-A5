@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using static System.Math;
 
 namespace Algo
 {
@@ -29,8 +30,45 @@ namespace Algo
                         .Select(r1r2 => r1r2.R1 - r1r2.R2)
                         .Select(delta => delta * delta)
                         .Sum();
-            return Math.Sqrt( sum );
+            return Sqrt( sum );
         }
+
+        public double Similarity(double distance) => 1 / (1 + distance);
+
+        public static double Pearson(User u1, User u2)
+        {
+            var a = u1.Ratings.Select(mr1 => new
+            {
+                R1 = mr1.Value,
+                R2 = u2.Ratings.GetValueWithDefault(mr1.Key, -1)
+            }).Where(r1r2 => r1r2.R2 >= 0);
+
+            return Pearson(a.Select(i => i.R1).ToList(), a.Select(i => i.R2).ToList());
+        }
+
+        public static double Pearson(List<int> x, List<int> y) => Covariance(x, y) / (Deviation(x) * Deviation(y));
+
+        private static double Deviation(List<int> range)
+        {
+            double mean = ArithmeticMean(range);
+            return Sqrt(range.Sum(r => Pow(r - mean, 2)));
+        }
+
+        private static double Covariance(List<int> x, List<int> y)
+        {
+            if (x.Count != y.Count) throw new ArgumentException();
+
+            double meanX = ArithmeticMean(x);
+            double meanY = ArithmeticMean(y);
+            double cov = 0;
+            for (int i = 0; i < x.Count; i++)
+            {
+                cov += (x[i] - meanX) * (y[i] - meanY);
+            }
+            return cov;
+        }
+
+        private static double ArithmeticMean(List<int> range) => (1.0 / range.Count) * range.Sum();
     }
 
 
