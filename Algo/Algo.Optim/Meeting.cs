@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Algo.Optim
 {
@@ -17,9 +16,9 @@ namespace Algo.Optim
 
     }
 
-    public class Meeting
+    public class Meeting : SolutionSpace
     {
-        public Meeting(string flightDatabasePath)
+        public Meeting(string flightDatabasePath) : base(0)
         {
             Database = new FlightDatabase(flightDatabasePath);
             Location = Airport.FindByCode("LHR");
@@ -96,6 +95,8 @@ namespace Algo.Optim
             g.DepartureFlights.AddRange(flights);
         }
 
+        protected override SolutionInstance CreateSolutionInstance(int[] coord) => new MeetingSolutionInstance(this, coord);
+
         public double SolutionCardinality => Guests.Select(g => (double)g.ArrivalFlights.Count * g.DepartureFlights.Count)
                                                     .Aggregate(1.0, (acc, card) => acc * card);
 
@@ -111,6 +112,5 @@ namespace Algo.Optim
         public DateTime MinDepartureDate { get; }
 
         public Airport Location { get; private set; }
-
     }
 }
