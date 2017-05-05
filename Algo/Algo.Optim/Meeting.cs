@@ -18,6 +18,8 @@ namespace Algo.Optim
 
     public class Meeting : SolutionSpace
     {
+        public double WaitingMinuteCost { get; set; }
+
         public Meeting(string flightDatabasePath) : base(0)
         {
             Database = new FlightDatabase(flightDatabasePath);
@@ -74,6 +76,11 @@ namespace Algo.Optim
                 SelectCandidateFlightsForArrival(g);
                 SelectCandidateFlightsForDeparture(g);
             }
+            Initialize(Guests.Select(g=> new[] { g.ArrivalFlights.Count, g.DepartureFlights.Count }).Aggregate(new List<int>(), (agg, cur) =>
+            {
+                agg.AddRange(cur);
+                return agg;
+            }).ToArray());
         }
 
         void SelectCandidateFlightsForArrival(Guest g)

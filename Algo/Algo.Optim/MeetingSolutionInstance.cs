@@ -1,4 +1,7 @@
-﻿namespace Algo.Optim
+﻿using System;
+using System.Linq;
+
+namespace Algo.Optim
 {
     public class MeetingSolutionInstance : SolutionInstance
     {
@@ -11,39 +14,31 @@
 
         protected override double DoComputeCost()
         {
-            double cost = 0;
-            for (int i = 0; i < Coordinates.Length; i += 2)
+            var guests = _meeting.Guests.Select((g, i) => new
             {
-                Guest guest = _meeting.Guests[i / 2];
-                SimpleFlight arrivalFlight = guest.ArrivalFlights[Coordinates[i]];
-                SimpleFlight departureFlight = guest.DepartureFlights[Coordinates[i + 1]];
-                cost += CalculateCost(arrivalFlight, departureFlight);
-            }
-            return cost;
+                Guest = g,
+                Arrival = ArrivalFor(i),
+                Departure = DepartureFor(i),
+                Index = i
+            });
+
+            DateTime lastArrivalTime = guests.Max(g => g.Arrival.ArrivalTime);
+            DateTime firstDepartureTime = guests.Min(g => g.Departure.DepartureTime);
+
+            return guests.Sum(g => CalculateIndividualCost(g.Guest, g.Arrival, g.Departure, lastArrivalTime, firstDepartureTime));
         }
 
-        private static double CalculateCost(SimpleFlight arrivalFlight, SimpleFlight departureFlight)
+        private SimpleFlight ArrivalFor(int i) => _meeting.Guests[i / 2].ArrivalFlights[Coordinates[i]];
+        private SimpleFlight DepartureFor(int i) => _meeting.Guests[i / 2].DepartureFlights[Coordinates[i + 1]];
+
+        private double CalculateIndividualCost(Guest guest, SimpleFlight arrivalFlight, SimpleFlight departureFlight, DateTime lastArrivalTime, DateTime firstDepartureTime)
         {
-            return arrivalFlight.Price + departureFlight.Price;
+            int totalWaitingMinutes = (lastArrivalTime - arrivalFlight.ArrivalTime).Minutes
+                                        + (departureFlight.DepartureTime - firstDepartureTime).Minutes;
+
+            return arrivalFlight.Price + departureFlight.Price + GuestMinuteCost(totalWaitingMinutes, _meeting.WaitingMinuteCost);
         }
 
-        private double Cost(params Config[] configs)
-        {
-
-            foreach (Config config in configs)
-            {
-                int totalWaitingMinutes = (_meeting.MaxArrivalDate - config.ArrivalFlight.ArrivalTime).Minutes
-                                            + (config.DepartureFlight.DepartureTime - _meeting.MinDepartureDate).Minutes;
-                cost += config.ArrivalFlight.Price
-                        + config.DepartureFlight.Price
-                        + GuestMinuteCost(totalWaitingMinutes, config.Guest.MinuteRateCost);
-
-            }
-        }
-
-        public double Cardinality() => Meeting.Guests.Select(g => g.ArrivalFlights.Count * g.DepartureFlights.Count).Aggregate(1.0, (acc, cur) => acc * cur);
-
-        public double GuestMinuteCost(double minutes, double rate) => rate * Math.Exp(minutes / 60);
-
+        public double GuestMinuteCost(double minutes, double baseMinuteCost, int offset = 10) => baseMinuteCost * Math.Exp((minutes - offset) / 60);
     }
 }
