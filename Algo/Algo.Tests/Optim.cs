@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using Algo.Optim;
-using System.Xml.Linq;
-using System.Runtime.CompilerServices;
 using System.IO;
+using System.Runtime.CompilerServices;
+using Algo.Optim;
+using NUnit.Framework;
 
 namespace Algo.Tests
 {
@@ -79,11 +75,11 @@ namespace Algo.Tests
         [Test]
         public void creating_a_Meeting()
         {
-            Meeting m = new Meeting(GetFlightDataPath());
-            Assert.That(m.Guests.Count, Is.EqualTo(9));
+            Solver s = new Solver(GetFlightDataPath(), "LHR");
+            Assert.That(s.Meeting.Guests.Count, Is.EqualTo(9));
             for(int i = 0; i < 9; ++i )
             {
-                Assert.That(m.Guests[1].ArrivalFlights.Count, Is.GreaterThan(3));
+                Assert.That(s.Meeting.Guests[1].ArrivalFlights.Count, Is.GreaterThan(3));
             }
         }
 
