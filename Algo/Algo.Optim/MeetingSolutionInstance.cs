@@ -28,8 +28,8 @@ namespace Algo.Optim
             return guests.Sum(g => CalculateIndividualCost(g.Guest, g.Arrival, g.Departure, lastArrivalTime, firstDepartureTime));
         }
 
-        private SimpleFlight ArrivalFor(int i) => _meeting.Guests[i / 2].ArrivalFlights[Coordinates[i]];
-        private SimpleFlight DepartureFor(int i) => _meeting.Guests[i / 2].DepartureFlights[Coordinates[i + 1]];
+        private SimpleFlight ArrivalFor(int i) => _meeting.Guests[i].ArrivalFlights[Coordinates[i * 2]];
+        private SimpleFlight DepartureFor(int i) => _meeting.Guests[i].DepartureFlights[Coordinates[i * 2 + 1]];
 
         private double CalculateIndividualCost(Guest guest, SimpleFlight arrivalFlight, SimpleFlight departureFlight, DateTime lastArrivalTime, DateTime firstDepartureTime)
         {

@@ -57,7 +57,7 @@ namespace Algo.Optim
                     bestAround = current.FindBestAround();
                 }
 
-                if (current.Cost < best.Cost) best = current;
+                if (best == null || current.Cost < best.Cost) best = current;
             }
 
             return best;
