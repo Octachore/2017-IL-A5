@@ -20,7 +20,7 @@ namespace Algo.Optim
     {
         public double WaitingMinuteCost { get; set; }
 
-        public Meeting(string flightDatabasePath) : base(0)
+        public Meeting(string flightDatabasePath, int seed) : base(seed)
         {
             Database = new FlightDatabase(flightDatabasePath);
             Location = Airport.FindByCode("LHR");
@@ -76,11 +76,11 @@ namespace Algo.Optim
                 SelectCandidateFlightsForArrival(g);
                 SelectCandidateFlightsForDeparture(g);
             }
-            Initialize(Guests.Select(g=> new[] { g.ArrivalFlights.Count, g.DepartureFlights.Count }).Aggregate(new List<int>(), (agg, cur) =>
-            {
-                agg.AddRange(cur);
-                return agg;
-            }).ToArray());
+            Initialize(Guests.Select(g => new[] { g.ArrivalFlights.Count, g.DepartureFlights.Count }).Aggregate(new List<int>(), (agg, cur) =>
+             {
+                 agg.AddRange(cur);
+                 return agg;
+             }).ToArray());
         }
 
         void SelectCandidateFlightsForArrival(Guest g)
@@ -104,15 +104,17 @@ namespace Algo.Optim
 
         protected override SolutionInstance CreateSolutionInstance(int[] coord) => new MeetingSolutionInstance(this, coord);
 
+
         public double SolutionCardinality => Guests.Select(g => (double)g.ArrivalFlights.Count * g.DepartureFlights.Count)
                                                     .Aggregate(1.0, (acc, card) => acc * card);
 
         public FlightDatabase Database { get; }
 
-
         public List<Guest> Guests { get; } = new List<Guest>();
 
         public int MaxFlightCount = 50;
+
+        public double WaitingMinutePrice = 4;
 
         public DateTime MaxArrivalDate { get; }
 
