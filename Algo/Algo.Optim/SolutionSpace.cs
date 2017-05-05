@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Algo.Optim
 {
@@ -46,6 +42,27 @@ namespace Algo.Optim
             }
         }
 
-        protected abstract SolutionInstance CreateSolutionInstance(int[] coord);
+        public SolutionInstance MonteCarlo(int nbTry)
+        {
+            SolutionInstance best = null;
+
+            while (--nbTry >= 0)
+            {
+                SolutionInstance current = GetRandomInstance();
+                SolutionInstance bestAround = current.FindBestAround();
+
+                while (current != bestAround)
+                {
+                    current = bestAround;
+                    bestAround = current.FindBestAround();
+                }
+
+                if (current.Cost < best.Cost) best = current;
+            }
+
+            return best;
+        }
+        
+        internal abstract SolutionInstance CreateSolutionInstance(int[] coord);
     }
 }

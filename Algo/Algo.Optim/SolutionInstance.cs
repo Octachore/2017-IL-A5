@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace Algo.Optim
 {
@@ -21,7 +17,31 @@ namespace Algo.Optim
 
         public SolutionInstance FindBestAround()
         {
-            return this;
+            SolutionInstance best = this;
+
+            for (int i = 0; i < Coordinates.Length; i++)
+            {
+                int x = Coordinates[i];
+                int y = _space.Cardinalities[i];
+
+                int idx1 = (x + 1) % y;
+                int idx2 = (x - 1 + y) % y;
+
+                Try(idx1, i, ref best);
+                Try(idx2, i, ref best);
+            }
+
+            return best;
+        }
+
+        private void Try(int idx, int i, ref SolutionInstance best)
+        {
+            int[] coord = Coordinates.ToArray();
+            coord[i] = idx;
+
+            SolutionInstance @try = _space.CreateSolutionInstance(coord);
+
+            if (@try.Cost < best.Cost) best = @try;
         }
 
         public int[] Coordinates { get; }

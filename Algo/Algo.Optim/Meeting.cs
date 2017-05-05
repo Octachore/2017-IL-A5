@@ -102,7 +102,7 @@ namespace Algo.Optim
             g.DepartureFlights.AddRange(flights);
         }
 
-        protected override SolutionInstance CreateSolutionInstance(int[] coord) => new MeetingSolutionInstance(this, coord);
+        internal override SolutionInstance CreateSolutionInstance(int[] coord) => new MeetingSolutionInstance(this, coord);
 
 
         public double SolutionCardinality => Guests.Select(g => (double)g.ArrivalFlights.Count * g.DepartureFlights.Count)
