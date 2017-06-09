@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Algo.Optim
 {
@@ -105,7 +104,7 @@ namespace Algo.Optim
             g.DepartureFlights.AddRange(flights);
         }
 
-        protected override SolutionInstance CreateSolutionInstance(int[] coord)
+        protected internal override SolutionInstance CreateSolutionInstance(int[] coord)
         {
             return new MeetingInstance( this, coord );
         }
