@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Algo.Optim
 {
@@ -44,6 +41,42 @@ namespace Algo.Optim
             {
                 var c = GetRandomInstance().Cost;
             }
+        }
+
+        public SolutionInstance SimulatedAnnealing(int nbTry)
+        {
+            SolutionInstance s = SimulatedAnnealing();
+            for (int i = 1; i < nbTry; i++)
+            {
+                SolutionInstance sn = SimulatedAnnealing();
+                if (sn.Cost < s.Cost) s = sn;
+            }
+            return s;
+        }
+
+        public SolutionInstance SimulatedAnnealing()
+        {
+            SolutionInstance s = GetRandomInstance();
+            double cost = s.Cost;
+            double k = 1.0;
+            double kmin = 0.000001;
+            double alpha = 0.9; // temperature level ratio
+
+            while (k > kmin)
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    var n = s.Neighbors.ToArray();
+                    var sn = n[_random.Next(0, n.Length - 1)];
+                    if(sn.Cost < s.Cost || Math.Exp((s.Cost - sn.Cost)/k) > _random.Next())
+                    {
+                        s = sn;
+                    }
+                }
+                k *= alpha;
+            }
+
+            return s;
         }
 
         internal protected abstract SolutionInstance CreateSolutionInstance(int[] coord);

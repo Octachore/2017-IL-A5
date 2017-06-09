@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using Algo.Optim;
-using System.Xml.Linq;
-using System.Runtime.CompilerServices;
 using System.IO;
+using System.Runtime.CompilerServices;
+using Algo.Optim;
+using NUnit.Framework;
 
 namespace Algo.Tests
 {
@@ -99,6 +95,13 @@ namespace Algo.Tests
                 m.TryRandom(200);
                 Console.WriteLine($"After {i*200} random => Best = {m.BestSolution.Cost} €, Worst = {m.WorstSolution.Cost} €.");
             }
+        }
+
+        [Test]
+        public void SimulatedAnnealing()
+        {
+            Meeting m = new Meeting(GetFlightDataPath(), 124);
+            var solution = m.SimulatedAnnealing(100);
         }
     }
 }
