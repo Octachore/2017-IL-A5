@@ -105,7 +105,7 @@ namespace Algo.Optim
             g.DepartureFlights.AddRange(flights);
         }
 
-        protected override SolutionInstance CreateSolutionInstance(int[] coord)
+        internal protected override SolutionInstance CreateSolutionInstance(int[] coord)
         {
             return new MeetingInstance( this, coord );
         }
@@ -119,7 +119,14 @@ namespace Algo.Optim
 
         public int MaxFlightCount = 50;
 
-        public double WaitingMinutePrice = 4;
+        public double WaitingMinutePrice( double count )
+        {
+            if (count < 10) return 0;
+            if (count < 20) return count * 4;
+            if (count < 40) return (count - 20) * 8 + 4 * 20;
+            if (count < 60) return (count - 40) * 10 + ((40 - 20) * 8 + 4 * 20);
+            return (count - 60) * 15 + (count - 60) * 10 + ((40 - 20) * 8 + 4 * 20);
+        }
 
         public DateTime MaxArrivalDate { get; }
 
