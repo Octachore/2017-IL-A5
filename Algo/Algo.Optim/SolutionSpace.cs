@@ -71,7 +71,7 @@ namespace Algo.Optim
                 {
                     var n = s.Neighbors.ToArray();
                     var sn = n[_random.Next(0, n.Length - 1)];
-                    if(sn.Cost < s.Cost || Math.Exp((s.Cost - sn.Cost)/k) > _random.Next())
+                    if(sn.Cost <= s.Cost || Math.Exp((s.Cost - sn.Cost)/(k *s.Cost)) > _random.NextDouble())
                     {
                         s = sn;
                     }

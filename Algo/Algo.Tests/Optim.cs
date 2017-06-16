@@ -107,6 +107,5 @@ namespace Algo.Tests
             Meeting m = new Meeting(GetFlightDataPath(), 124);
             var solution = m.SimulatedAnnealing(100);
         }
-
     }
 }
